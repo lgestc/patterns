@@ -2,7 +2,11 @@ class CanadianTVFromYourGrandpa {
     plugInViaWeirdPowerOutlet() {}
 }
 
-abstract class EuropeanDevice {
+interface EuropeanDevice {
+    plugIn(): void;
+}
+
+abstract class EuropeanDevice implements EuropeanDevice {
     plugIn() {}
 }
 
@@ -10,17 +14,20 @@ class VacuumCleaner extends EuropeanDevice {}
 
 class Microwave extends EuropeanDevice {}
 
+class CanadianToEuropeanDeviceAdapter implements EuropeanDevice {
+    constructor(private readonly canadianDevice: CanadianTVFromYourGrandpa) {}
+
+    plugIn() {
+        this.canadianDevice.plugInViaWeirdPowerOutlet();
+    }
+}
+
+// now I want to be able to plug in all of these at once!
+
 const devices = [
     new VacuumCleaner(),
     new Microwave(),
-    new CanadianTVFromYourGrandpa(),
+    new CanadianToEuropeanDeviceAdapter(new CanadianTVFromYourGrandpa()),
 ];
 
-// now I want to be able to plug in all of these at once!
-devices.forEach(device => {
-    if (device instanceof CanadianTVFromYourGrandpa) {
-        return device.plugInViaWeirdPowerOutlet();
-    }
-    
-    device.plugIn();
-})
+devices.forEach((device) => device.plugIn());
