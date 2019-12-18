@@ -54,6 +54,8 @@ class Cocktail {
         if (!this.readyToServe()) {
             throw new Error('its not ready yet!');
         }
+
+        console.log('cocktail served');
     }
 
     private readyToServe() {
@@ -69,40 +71,55 @@ class Cocktail {
     }
 }
 
+type SupportedCocktailNames = 'white russian' | 'tequila sunrise' | 'whiskey sour';
+
 interface Request {
-    cocktailName: 'white russian' | 'tequila sunrise' | 'whiskey sour';
+    cocktailName: SupportedCocktailNames;
+}
+
+class CocktailBuilder {
+    buildTequilaSunrise() {
+        const cocktail = new Cocktail();
+
+        cocktail.add(new Vodka());
+        cocktail.add(new LizardEgg());
+        cocktail.stir('left');
+        cocktail.stir('right');
+        cocktail.stir('left');
+        cocktail.addTinyTinyUmbrella();
+
+        return cocktail;
+    }
+
+    buildWhiskeySour() {
+        const cocktail = new Cocktail();
+
+        cocktail.add(new Vodka());
+        cocktail.add(new LizardEgg());
+        cocktail.add(new Vodka());
+        cocktail.stir('shake');
+        cocktail.stir('shake');
+        cocktail.addTinyTinyUmbrella();
+
+        return cocktail;
+    }
 }
 
 // Let's say this is our route handler
 function handleCocktailRequest({ cocktailName }: Request) {
+    const builder = new CocktailBuilder();
+
+    let cocktail: Cocktail;
+
     switch (cocktailName) {
-        case 'tequila sunrise': {
-            const cocktail = new Cocktail();
-
-            cocktail.add(new Vodka());
-            cocktail.stir('left');
-            cocktail.add(new LizardEgg());
-            cocktail.stir('right');
-            cocktail.stir('left');
-            cocktail.addTinyTinyUmbrella();
-
-            return cocktail.serve();
-        }
-
         case 'whiskey sour': {
-            const cocktail = new Cocktail();
-
-            cocktail.add(new Vodka());
-            cocktail.add(new LizardEgg());
-            cocktail.stir('shake');
-            cocktail.add(new Vodka());
-            cocktail.stir('shake');
-            cocktail.addTinyTinyUmbrella();
-
-            return cocktail.serve();
+            cocktail = builder.buildWhiskeySour();
+            break;
         }
 
         default:
-            throw new Error('unsupported cocktail requested');
+            throw new Error('unknown cocktail');
     }
+
+    cocktail.serve();
 }
