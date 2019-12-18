@@ -1,4 +1,18 @@
-type Weapon = 'sword' | 'rifle';
+interface Weapon {
+    attack(): void;
+}
+
+class Sword implements Weapon {
+    attack() {
+        console.log('dealt 15 points of damage');
+    }
+}
+
+class Rifle implements Weapon {
+    attack() {
+        console.log('dealt shitload of damage');
+    }
+}
 
 class Character {
     private weapon?: Weapon;
@@ -12,18 +26,14 @@ class Character {
             throw new Error('weapon not equipped');
         }
 
-        switch (this.weapon) {
-            case 'sword': {
-                console.log(`dealt 15 damage`);
-                break;
-            }
-
-            case 'rifle': {
-                console.log(`dealt shitload of damage`);
-                break;
-            }
-        }
-
-        // Adding 100 cases for each weapon we might have looks messy.
+        this.weapon.attack();
     }
 }
+
+const sword = new Sword();
+const rifle = new Rifle();
+
+const character = new Character();
+character.pickWeapon(sword);
+
+character.attack();
